@@ -446,3 +446,4 @@ class Model(object):
             return list1
         except(Exception, psycopg2.DatabaseError) as error:
             print(error)
+
