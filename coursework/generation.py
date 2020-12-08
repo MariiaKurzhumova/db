@@ -28,20 +28,29 @@ class Generation(Model):
                 years = []
                 countries = []
                 geners = []
-                for k in a:
-                    for j in k:
-                        titles.append(j)
-                for w in div:
-                    for j in w:
+                for titles_ in a:
+                    for title in titles_:
+                        titles.append(title)
+                for info in div:
+                    for j in info:
                         x = j.split(',')
+                        if len(x) < 3:
+                            years.append(0)
+                            countries.append("")
+                            geners.append("")
+                            continue
                         years.append(x[0])
                         countries.append(x[1])
                         geners.append(x[2])
                 for m in range(0, len(titles)):
-                    req = "INSERT INTO films (title, genre, country, year, released) " \
-                          "VALUES (%s, %s, %s, %s, RANDOM()::INT::BOOLEAN)"
-                    self.cur.execute(req, (titles[m], geners[m], countries[m], years[m]))
-                    self.db.commit()
+                    q = self.sess.query(Film).filter(Film.title == titles[m]).all()
+                    if len(q) == 0:
+                        req = "INSERT INTO films (title, genre, country, year, released) " \
+                              "VALUES (%s, %s, %s, %s, RANDOM()::INT::BOOLEAN)"
+                        self.cur.execute(req, (titles[m], geners[m], countries[m], years[m]))
+                        self.db.commit()
+                    else:
+                        continue
                 i = i + 1
             return True
 

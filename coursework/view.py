@@ -323,7 +323,7 @@ while True:
             else:
                 print("Incorrect number")
 
-    if inp == '5':
+    elif inp == '5':
         while True:
             print("Enter 1 if you want to get tickets")
             print("Enter 2 if you want to get ticket by id")
