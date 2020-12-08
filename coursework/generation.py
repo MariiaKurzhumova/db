@@ -1,3 +1,4 @@
+
 from sqlalchemy import exc
 import psycopg2
 from sqlalchemy.dialects.postgresql import psycopg2
@@ -39,15 +40,23 @@ class Generation(Model):
                             countries.append("")
                             geners.append("")
                             continue
-                        years.append(x[0])
+
+                        for s in x[0].split():
+                            if s.isdigit():
+                                year = int(s)
+                        years.append(year)
                         countries.append(x[1])
                         geners.append(x[2])
                 for m in range(0, len(titles)):
                     q = self.sess.query(Film).filter(Film.title == titles[m]).all()
                     if len(q) == 0:
                         req = "INSERT INTO films (title, genre, country, year, released) " \
-                              "VALUES (%s, %s, %s, %s, RANDOM()::INT::BOOLEAN)"
-                        self.cur.execute(req, (titles[m], geners[m], countries[m], years[m]))
+                              "VALUES (:title, :genre, :country, :year, :released)"
+                        released = True
+                        if years[m] < 2020:
+                            released = False
+                        self.sess.execute(req, {'title': titles[m], 'genre': geners[m], 'country': countries[m],
+                                                'year': years[m], 'released': released})
                         self.db.commit()
                     else:
                         continue
@@ -100,3 +109,79 @@ class Generation(Model):
             print(error)
             self.sess.rollback()
         return True
+
+    def best_films_in_genre(self, genre):
+        list = []
+        try:
+            genre = ' ' + genre
+            req = "with select_all as (select title, avg(evaluation) from ratings "\
+                    "join films on films.id = ratings.film_id "\
+                    "where genre =  :param group by title) "\
+                    "select * from select_all "\
+                    "where avg = (select max(avg) from select_all)"
+            q = self.sess.execute(req, {'param': genre})
+
+            for i in q:
+                list.append(i)
+        except(Exception, exc.DatabaseError, exc.InvalidRequestError) as error:
+            print(error)
+            self.sess.rollback()
+        return list
+
+    def best_films_in_years(self, year):
+        list = []
+        try:
+            req = "with select_all as (select title, avg(evaluation) from ratings "\
+                    "join films on films.id = ratings.film_id "\
+                    "where year =  :param group by title) "\
+                    "select * from select_all "\
+                    "where avg = (select max(avg) from select_all) "
+            q = self.sess.execute(req, {'param': year})
+
+            for i in q:
+                list.append(i)
+        except(Exception, exc.DatabaseError, exc.InvalidRequestError) as error:
+            print(error)
+            self.sess.rollback()
+        return list
+
+    def choose_movie(self, id):
+        list = []
+        try:
+            reqs = "with select_genres as(select genre, count(genre) from films as f join ratings as r "\
+                    "on f.id = r.film_id where r.user_id = :param group by genre) "\
+                    "select genre from select_genres where count = (select max(count) from select_genres)"
+            g = self.sess.execute(reqs, {'param': id}).fetchall()
+            self.sess.commit()
+
+            s = str(g)
+            st = ''
+            for i in range(3, len(s) - 4):
+                st = st + s[i];
+            print(st)
+            genre = st
+            if genre == '':
+                return None
+            for i in range(0, 9):
+                req = "select title from films where " \
+                      "id = (select random_films_for_user(:param))"
+                q = self.sess.execute(req, {'param': genre})
+                for j in q:
+                    list.append(j)
+        except(Exception, exc.DatabaseError, exc.InvalidRequestError) as error:
+            print(error)
+            self.sess.rollback()
+        return list
+# with select_all as (select title, avg(evaluation) from ratings
+# inner join films on ratings.film_id = films.id
+# group by title),
+#
+# select_max as (select * from select_all
+# where avg = (select max(avg) from select_all)),
+#
+# all_years as (select select_max.avg, films.year, count(year)
+# from select_max join films on select_max.title = films.title
+# group by select_max.avg, films.year)
+#
+# select * from all_years
+# where count = (select max(count) from all_years)

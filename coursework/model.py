@@ -27,20 +27,25 @@ class Model():
 
     def get(self, type_entity):
         try:
+            q = []
             q = self.sess.query(type_entity)
+
         except(Exception, exc.DatabaseError, exc.InvalidRequestError) as error:
             print(error)
             self.sess.rollback()
         return q
 
+
     def get_by_id(self,id, type_entity):
         try:
+            q = []
             q = self.sess.query(type_entity).get(id)
 
         except(Exception, exc.DatabaseError, exc.InvalidRequestError) as error:
             print(error)
             self.sess.rollback()
         return q
+
 
     def add(self, entity):
         try:

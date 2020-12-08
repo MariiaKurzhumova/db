@@ -11,14 +11,20 @@ generator = Generation()
 class Controller:
     def print_films(self):
         films = model.get(Film)
-        for film in films:
-            print("Film: ")
-            print(film.id, film.title, film.genre, film.country, film.year, film.released)
+        if films is None:
+            print('There is no such entities')
+        else:
+            for film in films:
+                print("Film: ")
+                print(film.id, film.title, film.genre, film.country, film.year, film.released)
 
     def print_film(self, id):
         film = model.get_by_id(id, Film)
-        print("Film: ")
-        print(film.id, film.title, film.genre, film.country, film.year, film.released)
+        if film is None:
+            print('There is no such entity')
+        else:
+            print("Film: ")
+            print(film.id, film.title, film.genre, film.country, film.year, film.released)
 
     def add_film(self, title, genre, country, year, released):
         film = Film(title, genre, country, year, released)
@@ -49,14 +55,20 @@ class Controller:
             print("Error: Record wasn't deleted!")
     def print_halls(self):
         halls = model.get(Hall)
-        for hall in halls:
-            print("Hall: ")
-            print(hall.id, hall.name, hall.amount_of_seats, hall.type_of_hall)
+        if halls is None:
+            print('There is no such entities')
+        else:
+            for hall in halls:
+                print("Hall: ")
+                print(hall.id, hall.name, hall.amount_of_seats, hall.type_of_hall)
 
     def print_hall(self, id):
         hall = model.get_by_id(id, Hall)
-        print("Hall: ")
-        print(hall.id, hall.name, hall.amount_of_seats, hall.type_of_hall)
+        if hall is None:
+            print('There is no such entities')
+        else:
+            print("Hall: ")
+            print(hall.id, hall.name, hall.amount_of_seats, hall.type_of_hall)
 
     def add_hall(self, name, amount_of_seats, type_of_hall):
         hall = Hall(name, amount_of_seats, type_of_hall)
@@ -86,14 +98,20 @@ class Controller:
 
     def print_users(self):
         users = model.get(User)
-        for user in users:
-            print("User: ")
-            print(user.id, user.login, user.fullname, user.password_hash)
+        if users is None:
+            print('There is no such entities')
+        else:
+            for user in users:
+                print("User: ")
+                print(user.id, user.login, user.fullname, user.password_hash)
 
     def print_user(self, id):
         user = model.get_by_id(id, User)
-        print("User: ")
-        print(user.id, user.login, user.fullname, user.password_hash)
+        if user is None:
+            print('There is no such entities')
+        else:
+            print("User: ")
+            print(user.id, user.login, user.fullname, user.password_hash)
 
 
     def add_user(self, login, fullname, password_hash):
@@ -123,14 +141,20 @@ class Controller:
             print("Error: Record wasn't deleted!")
     def print_ratings(self):
         ratings = model.get(Rating)
-        for rating in ratings:
-            print("Rating: ")
-            print(rating.id, rating.film_id, rating.user_id, rating.evaluation)
+        if ratings is None:
+            print('There is no such entities')
+        else:
+            for rating in ratings:
+                print("Rating: ")
+                print(rating.id, rating.film_id, rating.user_id, rating.evaluation)
 
     def print_rating(self, id):
         rating = model.get_by_id(id, Rating)
-        print("Rating: ")
-        print(rating.film_id, rating.user_id, rating.evaluation)
+        if rating is None:
+            print('There is no such entities')
+        else:
+            print("Rating: ")
+            print(rating.film_id, rating.user_id, rating.evaluation)
 
 
     def add_rating(self, film_id, user_id, evaluation):
@@ -160,16 +184,22 @@ class Controller:
             print("Error: Record wasn't deleted!")
     def print_tickets(self):
         tickets = model.get(Ticket)
-        for ticket in tickets:
-            print("Tickets: ")
-            print(ticket.id, ticket.user_id, ticket.film_id,
-                  ticket.hall_id, ticket.row_number, ticket.seat_number, ticket.date_time, ticket.price)
+        if tickets is None:
+            print('There is no such entities')
+        else:
+            for ticket in tickets:
+                print("Tickets: ")
+                print(ticket.id, ticket.user_id, ticket.film_id,
+                      ticket.hall_id, ticket.row_number, ticket.seat_number, ticket.date_time, ticket.price)
 
     def print_ticket(self, id):
         ticket = model.get_by_id(id, Ticket)
-        print("Ticket: ")
-        print(ticket.id, ticket.user_id, ticket.film_id,
-              ticket.hall_id, ticket.row_number, ticket.seat_number, ticket.date_time, ticket.price)
+        if ticket is None:
+            print('There is no such entities')
+        else:
+            print("Ticket: ")
+            print(ticket.id, ticket.user_id, ticket.film_id,
+                  ticket.hall_id, ticket.row_number, ticket.seat_number, ticket.date_time, ticket.price)
 
 
     def add_ticket(self, user_id, film_id, hall_id, row_number, seat_number, date_time, price):
@@ -237,3 +267,26 @@ class Controller:
             print("Record was added")
         else:
             print("Error: Record wasn't added!")
+
+    def best_films_in_genre(self, genre):
+        q = generator.best_films_in_genre(genre)
+        if q is None:
+            print('There is no such films')
+        else:
+            for i in q:
+                print(i)
+
+    def best_films_in_years(self, year):
+        q = generator.best_films_in_years(year)
+        if q is None:
+            print('There is no such films')
+        else:
+            for i in q:
+                print(i)
+    def choose_films(self, id):
+        q = generator.choose_movie(id)
+        if q is None:
+            print('There is no such user')
+        else:
+            for i in q:
+                print(i)

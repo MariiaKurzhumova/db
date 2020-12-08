@@ -9,6 +9,7 @@ while True:
     print("Enter 3 if you want to work with halls")
     print("Enter 4 if you want to work with ratings")
     print("Enter 5 if you want to work with tickets")
+    print("Enter 6 if you want to work with requests")
     print("Enter 0 if you want to exit")
     inp = input()
     if inp == '1':
@@ -461,5 +462,35 @@ while True:
                 print("Incorrect number")
     elif inp == '0':
         break
+    elif inp == '6':
+        while True:
+            print("Enter 1 to look best films of genre")
+            print("Enter 2 to look best films of year")
+            print("Enter 3 to choose film for user")
+            print("Enter 0 if you want to go to menu")
+            inp = input()
+            if inp == '1':
+                genre = input("Enter genre: ")
+                controller.best_films_in_genre(genre)
+            elif inp == '2':
+                while True:
+                    try:
+                        year = int(input("Enter year: "))
+                        break
+                    except ValueError:
+                        print("Error! Try again: ")
+                controller.best_films_in_years(year)
+            elif inp == '3':
+                while True:
+                    try:
+                        id = int(input("Enter id of user: "))
+                        break
+                    except ValueError:
+                        print("Error! Try again: ")
+                controller.choose_films(id)
+            elif inp == '0':
+                break
+            else:
+                print("Incorrect number")
     else:
         print("Incorrect number")
