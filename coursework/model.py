@@ -69,15 +69,6 @@ class Model():
 
     def delete(self, id, type_entity):
         try:
-            if type_entity == Film:
-                self.sess.query(Ticket).filter_by(film_id=id).delete()
-                self.sess.query(Rating).filter_by(film_id=id).delete()
-            elif type_entity == User:
-                self.sess.query(Ticket).filter_by(user_id=id).delete()
-                self.sess.query(Rating).filter_by(user_id=id).delete()
-            elif type_entity == Hall:
-                self.sess.query(Ticket).filter_by(hall_id=id).delete()
-
             entity = self.get_by_id(id, type_entity)
             self.sess.delete(entity)
             self.sess.commit()

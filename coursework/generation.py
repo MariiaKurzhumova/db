@@ -1,12 +1,14 @@
-
 from sqlalchemy import exc
-import psycopg2
-from sqlalchemy.dialects.postgresql import psycopg2
 from tables import Film
 from model import Model
 from bs4 import BeautifulSoup
 import requests
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
+PLOT_LABEL_FONT_SIZE = 14
+PLOT_MEAKING_FONT_SIZE = 6
 
 class Generation(Model):
     def __init__(self):
@@ -172,6 +174,37 @@ class Generation(Model):
             print(error)
             self.sess.rollback()
         return list
+
+    def getColors(self, n):
+        COLORS = []
+        cm = plt.cm.get_cmap('hsv', n)
+        for i in np.arange(n):
+            COLORS.append(cm(i))
+        return COLORS
+    def statistics(self):
+        try:
+            req = "select film_id, evaluation, genre, country," \
+                  " year from ratings join films on films.id = ratings.film_id where year<>0"
+            q = self.sess.execute(req).fetchall()
+        except(Exception, exc.DatabaseError, exc.InvalidRequestError) as error:
+            print(error)
+            self.sess.rollback()
+        return q
+
+    def graph(self):
+        q = self.statistics()
+        df = pd.DataFrame(q, columns=["film_id", "evaluation", "genre", "country", "year"])
+        select_data = df[["genre", "evaluation"]]
+        group = select_data.groupby('genre')['evaluation'].mean(1).reset_index()
+        group = group.sort_values(by=["evaluation"], ascending=False)
+        plt.title('Середнє значення оцінок по жанрам')
+        plt.bar(group["genre"], group["evaluation"], color=self.getColors(len(group["evaluation"])))
+        plt.ylabel('Оцінки')
+        plt.xlabel('Жанри')
+        plt.xticks(rotation=90, fontsize=PLOT_MEAKING_FONT_SIZE)
+        plt.show()
+g = Generation()
+g.graph()
 # with select_all as (select title, avg(evaluation) from ratings
 # inner join films on ratings.film_id = films.id
 # group by title),
@@ -185,3 +218,4 @@ class Generation(Model):
 #
 # select * from all_years
 # where count = (select max(count) from all_years)
+
