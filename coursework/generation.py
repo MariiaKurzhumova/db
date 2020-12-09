@@ -189,10 +189,25 @@ class Generation(Model):
         except(Exception, exc.DatabaseError, exc.InvalidRequestError) as error:
             print(error)
             self.sess.rollback()
+            return None
         return q
 
-    def graph(self):
+    def statistics_for_tickets(self):
+        try:
+            req = "select name, country, genre, film_id from tickets as t join halls "\
+                    "on halls.id = t.hall_id join films as f on f.id = t.film_id where year<>0"
+            q = self.sess.execute(req).fetchall()
+        except(Exception, exc.DatabaseError, exc.InvalidRequestError) as error:
+            print(error)
+            self.sess.rollback()
+            return None
+        return q
+
+    def graph_for_genres(self):
         q = self.statistics()
+        if q is None:
+            print('Error')
+            return
         df = pd.DataFrame(q, columns=["film_id", "evaluation", "genre", "country", "year"])
         select_data = df[["genre", "evaluation"]]
         group = select_data.groupby('genre')['evaluation'].mean(1).reset_index()
@@ -203,19 +218,47 @@ class Generation(Model):
         plt.xlabel('Жанри')
         plt.xticks(rotation=90, fontsize=PLOT_MEAKING_FONT_SIZE)
         plt.show()
-g = Generation()
-g.graph()
-# with select_all as (select title, avg(evaluation) from ratings
-# inner join films on ratings.film_id = films.id
-# group by title),
-#
-# select_max as (select * from select_all
-# where avg = (select max(avg) from select_all)),
-#
-# all_years as (select select_max.avg, films.year, count(year)
-# from select_max join films on select_max.title = films.title
-# group by select_max.avg, films.year)
-#
-# select * from all_years
-# where count = (select max(count) from all_years)
 
+    def graph_for_years(self):
+        q = self.statistics()
+        if q is None:
+            print('Error')
+            return
+        df = pd.DataFrame(q, columns=["film_id", "evaluation", "genre", "country", "year"])
+        select_data = df[["year", "evaluation"]]
+        group = select_data.groupby('year')['evaluation'].mean(1).reset_index()
+        group = group.sort_values(by=["year"], ascending=False)
+        plt.title('Середнє значення оцінок по рокам')
+        plt.bar(group["year"], group["evaluation"], color=self.getColors(len(group["year"])))
+        plt.ylabel('Оцінки')
+        plt.xlabel('Роки')
+        plt.xticks(rotation=90, fontsize=PLOT_MEAKING_FONT_SIZE)
+        plt.show()
+
+    def graph_for_halls(self):
+        q = self.statistics_for_tickets()
+        if q is None:
+            print('Error')
+            return
+        df = pd.DataFrame(q, columns=["name", "country", "genre", "film_id"])
+        select_data = df[["name", "film_id"]]
+        group = select_data.groupby('name')['film_id'].sum().reset_index()
+        group = group.sort_values(by=["film_id"], ascending=False)
+        colors = ['green', 'blue', 'gray', 'pink', 'red']
+        plt.pie(group["film_id"], labels=group["name"], colors=colors, autopct='%1.1f%%')
+        plt.title('Кількість відвідування залів по назві')
+        plt.axis('equal')
+        plt.show()
+
+    def graph_for_ticket(self):
+        q = self.statistics_for_tickets()
+        if q is None:
+            print('Error')
+            return
+        df = pd.DataFrame(q, columns=["name", "country", "genre", "film_id"])
+        select_data = df[["genre", "film_id", "country"]]
+        group = select_data.groupby('genre')['film_id'].sum().reset_index()
+        plt.title('Кількість переглядів у кінотеатрі по жанрам')
+        plt.plot(group["genre"], group["film_id"])
+        plt.xticks(rotation=90, fontsize=PLOT_MEAKING_FONT_SIZE)
+        plt.show()

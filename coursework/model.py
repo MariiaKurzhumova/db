@@ -18,12 +18,6 @@ class Model():
                                    host="127.0.0.1",
                                    port="5432")
         self.cur = self.db.cursor()
-    # def __del__(self):
-    #     try:
-    #         self.sess.close()
-    #     except (Exception, psycopg2.DatabaseError, exc.InvalidRequestError) as error:
-    #         self.sess.execute("ROLLBACK")
-    #         print(error)
 
     def get(self, type_entity):
         try:

@@ -10,6 +10,7 @@ while True:
     print("Enter 4 if you want to work with ratings")
     print("Enter 5 if you want to work with tickets")
     print("Enter 6 if you want to work with requests")
+    print("Enter 7 if you want to look graph")
     print("Enter 0 if you want to exit")
     inp = input()
     if inp == '1':
@@ -488,6 +489,26 @@ while True:
                     except ValueError:
                         print("Error! Try again: ")
                 controller.choose_films(id)
+            elif inp == '0':
+                break
+            else:
+                print("Incorrect number")
+    elif inp == '7':
+        while True:
+            print("Enter 1 to look statistics on genres(site)")
+            print("Enter 2 to look statistics on years(site)")
+            print("Enter 3 to look statistics on halls(cinema)")
+            print("Enter 4 to look statistics on genres(cinema)")
+            print("Enter 0 if you want to go to menu")
+            inp = input()
+            if inp == '1':
+                controller.graph_genre()
+            elif inp == '2':
+                controller.graph_years()
+            elif inp == '3':
+                controller.graph_hall()
+            elif inp == '4':
+                controller.graph_ticket_genre()
             elif inp == '0':
                 break
             else:

@@ -290,3 +290,15 @@ class Controller:
         else:
             for i in q:
                 print(i)
+
+    def graph_genre(self):
+        generator.graph_for_genres()
+
+    def graph_years(self):
+        generator.graph_for_years()
+
+    def graph_hall(self):
+        generator.graph_for_halls()
+
+    def graph_ticket_genre(self):
+        generator.graph_for_ticket()
