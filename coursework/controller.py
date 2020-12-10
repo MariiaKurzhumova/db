@@ -8,7 +8,11 @@ from generation import Generation
 
 model = Model()
 generator = Generation()
+
+
 class Controller:
+
+
     def print_films(self):
         films = model.get(Film)
         if films is None:
@@ -34,7 +38,7 @@ class Controller:
         else:
             print("Error: New record wasn't added in db!")
 
-    def update_film(self, id,  title, genre, country, year, released):
+    def update_film(self, id, title, genre, country, year, released):
         film = model.get_by_id(id, Film)
         film.title = title
         film.genre = genre
@@ -53,6 +57,7 @@ class Controller:
             print("Record was deleted")
         else:
             print("Error: Record wasn't deleted!")
+
     def print_halls(self):
         halls = model.get(Hall)
         if halls is None:
@@ -78,7 +83,7 @@ class Controller:
         else:
             print("Error: New record wasn't added in db!")
 
-    def update_hall(self, id,  name, amount_of_seats, type_of_hall):
+    def update_hall(self, id, name, amount_of_seats, type_of_hall):
         hall = model.get_by_id(id, Hall)
         hall.name = name
         hall.amount_of_seats = amount_of_seats
@@ -113,7 +118,6 @@ class Controller:
             print("User: ")
             print(user.id, user.login, user.fullname, user.password_hash)
 
-
     def add_user(self, login, fullname, password_hash):
         user = User(login, fullname, password_hash)
         bl = model.add(user)
@@ -139,6 +143,7 @@ class Controller:
             print("Record was deleted")
         else:
             print("Error: Record wasn't deleted!")
+
     def print_ratings(self):
         ratings = model.get(Rating)
         if ratings is None:
@@ -155,7 +160,6 @@ class Controller:
         else:
             print("Rating: ")
             print(rating.film_id, rating.user_id, rating.evaluation)
-
 
     def add_rating(self, film_id, user_id, evaluation):
         rating = Rating(film_id, user_id, evaluation)
@@ -182,6 +186,7 @@ class Controller:
             print("Record was deleted")
         else:
             print("Error: Record wasn't deleted!")
+
     def print_tickets(self):
         tickets = model.get(Ticket)
         if tickets is None:
@@ -200,7 +205,6 @@ class Controller:
             print("Ticket: ")
             print(ticket.id, ticket.user_id, ticket.film_id,
                   ticket.hall_id, ticket.row_number, ticket.seat_number, ticket.date_time, ticket.price)
-
 
     def add_ticket(self, user_id, film_id, hall_id, row_number, seat_number, date_time, price):
         ticket = Ticket(user_id, film_id, hall_id, row_number,
@@ -274,7 +278,7 @@ class Controller:
             print('There is no such films')
         else:
             for i in q:
-                print(i)
+                print(i[0], i[1])
 
     def best_films_in_years(self, year):
         q = generator.best_films_in_years(year)
@@ -283,6 +287,7 @@ class Controller:
         else:
             for i in q:
                 print(i)
+
     def choose_films(self, id):
         q = generator.choose_movie(id)
         if q is None:

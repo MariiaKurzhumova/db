@@ -2,6 +2,7 @@ from controller import Controller
 import hashlib
 from datetime import datetime
 from datetime import time
+
 controller = Controller()
 while True:
     print("Enter 1 if you want to work with films")
@@ -43,7 +44,11 @@ while True:
                 while True:
                     try:
                         year = int(input("Enter year of film: "))
-                        break
+                        if 1895 > year or year > 2020:
+                            print('Wrong year')
+                            continue
+                        else:
+                            break
                     except ValueError:
                         print("Error! Try again: ")
                 while True:
@@ -69,7 +74,11 @@ while True:
                 while True:
                     try:
                         year = int(input("Enter year of film: "))
-                        break
+                        if 1895 > year or year > 2020:
+                            print('Wrong year')
+                            continue
+                        else:
+                            break
                     except ValueError:
                         print("Error! Try again: ")
                 while True:
@@ -272,7 +281,7 @@ while True:
                 while True:
                     try:
                         evaluation = int(input("Enter evaluation(1-10) of rating: "))
-                        if evaluation > 0 and evaluation < 11:
+                        if 0 < evaluation < 11:
                             break
                     except ValueError:
                         print("Error! Try again: ")
@@ -299,7 +308,7 @@ while True:
                 while True:
                     try:
                         evaluation = int(input("Enter evaluation(1-10) of rating: "))
-                        if evaluation > 0 and evaluation < 11:
+                        if 0 < evaluation < 11:
                             break
                     except ValueError:
                         print("Error! Try again: ")
@@ -477,9 +486,15 @@ while True:
                 while True:
                     try:
                         year = int(input("Enter year: "))
-                        break
+                        if 1895 > year or year > 2020:
+                            print('Wrong year')
+                            continue
+                        else:
+                            break
+
                     except ValueError:
                         print("Error! Try again: ")
+
                 controller.best_films_in_years(year)
             elif inp == '3':
                 while True:

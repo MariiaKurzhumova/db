@@ -7,7 +7,8 @@ from tables import Rating
 from tables import Hall
 from tables import Ticket
 
-class Model():
+
+class Model:
     def __init__(self):
         self.engine = create_engine("postgres://postgres:Nuva2002@localhost/coursework")
 
@@ -20,8 +21,8 @@ class Model():
         self.cur = self.db.cursor()
 
     def get(self, type_entity):
+        q = []
         try:
-            q = []
             q = self.sess.query(type_entity)
 
         except(Exception, exc.DatabaseError, exc.InvalidRequestError) as error:
@@ -29,17 +30,14 @@ class Model():
             self.sess.rollback()
         return q
 
-
-    def get_by_id(self,id, type_entity):
+    def get_by_id(self, id, type_entity):
+        q = []
         try:
-            q = []
             q = self.sess.query(type_entity).get(id)
-
         except(Exception, exc.DatabaseError, exc.InvalidRequestError) as error:
             print(error)
             self.sess.rollback()
         return q
-
 
     def add(self, entity):
         try:
