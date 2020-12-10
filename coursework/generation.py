@@ -6,10 +6,11 @@ import requests
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-
+from generator import load_data, to_json
+import json
+from pprint import pprint
 PLOT_LABEL_FONT_SIZE = 14
 PLOT_MEAKING_FONT_SIZE = 6
-
 
 class Generation(Model):
     def __init__(self):
@@ -21,49 +22,26 @@ class Generation(Model):
         length = len(q)
         i = int(length / 36)
         to_page = i + pages
+
         if pages > (self.max_page - i):
             return False
         else:
-            while i <= to_page:
-                req = requests.get('https://rezka.ag/films/page/' + str(i) + '/')
-                bs = BeautifulSoup(req.text, 'html.parser')
-                a = bs.select('div.b-content__inline_item-link > a')
-                div = bs.select('div.b-content__inline_item-link > div')
-                titles = []
-                years = []
-                countries = []
-                genres = []
-                for titles_ in a:
-                    for title in titles_:
-                        titles.append(title)
-                for info in div:
-                    for j in info:
-                        x = j.split(',')
-                        if len(x) < 3:
-                            years.append(0)
-                            countries.append("")
-                            genres.append("")
-                            continue
-                        year = 0
-                        for s in x[0].split():
-                            if s.isdigit():
-                                year = int(s)
-                        years.append(year)
-                        countries.append(x[1])
-                        genres.append(x[2])
-                for m in range(0, len(titles)):
-                    q = self.sess.query(Film).filter(Film.title == titles[m]).all()
+            l = load_data(i, to_page)
+            to_json(l)
+            with open('data_file.json') as f:
+                data = json.load(f)
+                for m in range(0, len(data)):
+                    q = self.sess.query(Film).filter(Film.title == data[m]['title']).all()
                     if len(q) == 0:
                         req = "INSERT INTO films (title, genre, country, year, released) " \
                               "VALUES (%s, %s, %s, %s, %s)"
                         released = True
-                        if years[m] < 2020:
+                        if data[m]['year']< 2020:
                             released = False
-                        self.cur.execute(req, (titles[m], genres[m], countries[m], years[m], released))
+                        self.cur.execute(req, (data[m]['title'], data[m]["genre"], data[m]["country"], data[m]["year"], released))
                         self.db.commit()
                     else:
                         continue
-                i = i + 1
             return True
 
     def generator_users(self, num):
