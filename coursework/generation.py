@@ -42,7 +42,7 @@ class Generation(Model):
                             countries.append("")
                             geners.append("")
                             continue
-
+                        year = 0
                         for s in x[0].split():
                             if s.isdigit():
                                 year = int(s)
@@ -51,14 +51,13 @@ class Generation(Model):
                         geners.append(x[2])
                 for m in range(0, len(titles)):
                     q = self.sess.query(Film).filter(Film.title == titles[m]).all()
-                    if len(q) == 0:
+                    if len(q)==0:
                         req = "INSERT INTO films (title, genre, country, year, released) " \
-                              "VALUES (:title, :genre, :country, :year, :released)"
+                                  "VALUES (%s, %s, %s, %s, %s)"
                         released = True
                         if years[m] < 2020:
                             released = False
-                        self.sess.execute(req, {'title': titles[m], 'genre': geners[m], 'country': countries[m],
-                                                'year': years[m], 'released': released})
+                        self.cur.execute(req, (titles[m], geners[m],countries[m], years[m],  released))
                         self.db.commit()
                     else:
                         continue
@@ -226,8 +225,8 @@ class Generation(Model):
             return
         df = pd.DataFrame(q, columns=["film_id", "evaluation", "genre", "country", "year"])
         select_data = df[["year", "evaluation"]]
-        group = select_data.groupby('year')['evaluation'].mean(1).reset_index()
-        group = group.sort_values(by=["year"], ascending=False)
+        group = select_data.groupby('year')['evaluation'].median().reset_index()
+        group = group.sort_values(by=['evaluation'], ascending=False)
         plt.title('Середнє значення оцінок по рокам')
         plt.bar(group["year"], group["evaluation"], color=self.getColors(len(group["year"])))
         plt.ylabel('Оцінки')
@@ -257,7 +256,7 @@ class Generation(Model):
             return
         df = pd.DataFrame(q, columns=["name", "country", "genre", "film_id"])
         select_data = df[["genre", "film_id", "country"]]
-        group = select_data.groupby('genre')['film_id'].sum().reset_index()
+        group = select_data.groupby('genre')['film_id'].median().reset_index()
         plt.title('Кількість переглядів у кінотеатрі по жанрам')
         plt.plot(group["genre"], group["film_id"])
         plt.xticks(rotation=90, fontsize=PLOT_MEAKING_FONT_SIZE)
