@@ -83,7 +83,7 @@ class Generation(Model):
     def generator_tickets(self, num):
         try:
             req = "insert into tickets (user_id, film_id, hall_id, row_number, seat_number, date_time, price)" \
-                  "select random_users_id(), random_films_id(), random_halls_id(), random()*(7-20+1)+20," \
+                  "select random_users_id(), random_films_ticket_id(), random_halls_id(), random()*(7-20+1)+20," \
                   "random()*(1-30+1)+30, timestamp '2020-12-01 23:00:00' + random() * " \
                   "(timestamp '2020-10-01 10:00:00' - timestamp '2020-12-01 23:00:00')," \
                   "random()*(70-120+1)+120 from generate_series(1,:param);"
@@ -206,7 +206,7 @@ class Generation(Model):
         select_data = df[["year", "evaluation"]]
         group = select_data.groupby('year')['evaluation'].median().reset_index()
         group = group.sort_values(by=['evaluation'], ascending=False)
-        plt.title('Середнє значення оцінок по рокам')
+        plt.title('Середнє значення оцінок по роках')
         plt.bar(group["year"], group["evaluation"], color=self.getColors(len(group["year"])))
         plt.ylabel('Оцінки')
         plt.xlabel('Роки')
@@ -222,7 +222,7 @@ class Generation(Model):
         select_data = df[["name", "film_id"]]
         group = select_data.groupby('name')['film_id'].sum().reset_index()
         group = group.sort_values(by=["film_id"], ascending=False)
-        colors = ['green', 'blue', 'gray', 'pink', 'red']
+        colors = ['green', 'blue', 'yellow', 'pink', 'red', 'gray', 'violet', 'white']
         plt.pie(group["film_id"], labels=group["name"], colors=colors, autopct='%1.1f%%')
         plt.title('Кількість відвідування залів по назві')
         plt.axis('equal')
@@ -239,4 +239,23 @@ class Generation(Model):
         plt.title('Кількість переглядів у кінотеатрі по жанрам')
         plt.plot(group["genre"], group["film_id"])
         plt.xticks(rotation=90, fontsize=PLOT_MEAKING_FONT_SIZE)
+        plt.show()
+
+
+    def print_graph(self):
+        x1 = np.arange(1, 6) - 0.2
+        x2 = np.arange(1, 6) + 0.2
+        y1 = [12.9, 2.1, 10.2, 10.3, 11.8]
+        y2 = [9.6, 0.1, 1.9, 9.5, 8.2]
+        fig, ax = plt.subplots()
+
+        ax.bar(x1, y1, width=0.4)
+        ax.bar(x2, y2, width=0.4)
+
+        ax.set_facecolor('seashell')
+        fig.set_figwidth(12)
+        fig.set_figheight(6)
+        fig.set_facecolor('floralwhite')
+        plt.title('Індекси:')
+        plt.ylabel('Execution time (ms)')
         plt.show()
