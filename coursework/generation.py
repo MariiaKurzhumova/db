@@ -113,7 +113,7 @@ class Generation(Model):
         return list
 
     def best_films_in_years(self, year):
-        q = []
+        list = []
         try:
             req = "with select_all as (select title, avg(evaluation) from ratings " \
                   "join films on films.id = ratings.film_id " \
@@ -121,10 +121,12 @@ class Generation(Model):
                   "select * from select_all " \
                   "where avg = (select max(avg) from select_all) "
             q = self.sess.execute(req, {'param': year})
+            for i in q:
+                list.append(i)
         except(Exception, exc.DatabaseError, exc.InvalidRequestError) as error:
             print(error)
             self.sess.rollback()
-        return q
+        return list
 
     def choose_movie(self, id):
         list = []
@@ -224,7 +226,7 @@ class Generation(Model):
         group = group.sort_values(by=["film_id"], ascending=False)
         colors = ['green', 'blue', 'yellow', 'pink', 'red', 'gray', 'violet', 'white']
         plt.pie(group["film_id"], labels=group["name"], colors=colors, autopct='%1.1f%%')
-        plt.title('Кількість відвідування залів по назві')
+        plt.title('Відвідуванність залів')
         plt.axis('equal')
         plt.show()
 

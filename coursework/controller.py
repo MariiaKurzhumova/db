@@ -274,7 +274,7 @@ class Controller:
 
     def best_films_in_genre(self, genre):
         q = generator.best_films_in_genre(genre)
-        if q is None:
+        if len(q) == 0:
             print('There is no such films')
         else:
             for i in q:
@@ -282,11 +282,11 @@ class Controller:
 
     def best_films_in_years(self, year):
         q = generator.best_films_in_years(year)
-        if q is None:
+        if len(q) == 0:
             print('There is no such films')
         else:
             for i in q:
-                print(i)
+                print(i[0], i[1])
 
     def choose_films(self, id):
         q = generator.choose_movie(id)
